@@ -4,7 +4,9 @@
   const content = window.UNDERLATE_CONTENT;
   const canvas = document.getElementById("game");
   const ctx = canvas.getContext("2d");
-  ctx.imageSmoothingEnabled = false;
+  const LOGICAL_W = 640;
+  const LOGICAL_H = 480;
+  let renderScale = 1;
 
   const externalSprites = {
     skeleton: new Image(),
@@ -17,8 +19,8 @@
   externalAudio.ending.preload = "auto";
   externalAudio.ending.loop = false;
 
-  const W = canvas.width;
-  const H = canvas.height;
+  const W = LOGICAL_W;
+  const H = LOGICAL_H;
   const SAVE_KEY = "underlate-save-v2";
   const TILE = 32;
   const FONT = '"Determination Mono", "Courier New", Consolas, monospace';
@@ -48,6 +50,18 @@
     wallTop: "#5a4d43",
     shadow: "rgba(0,0,0,0.36)",
   };
+
+  function resizeCanvas() {
+    const dpr = Math.max(1, Math.floor(window.devicePixelRatio || 1));
+    renderScale = dpr;
+    canvas.width = LOGICAL_W * dpr;
+    canvas.height = LOGICAL_H * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.imageSmoothingEnabled = false;
+  }
+
+  resizeCanvas();
+  window.addEventListener("resize", resizeCanvas);
 
   const roomThemes = {
     hall: { a: "#181d20", b: "#22292c", rug: "#2d1d25", glow: "#42c3b6" },
