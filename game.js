@@ -121,6 +121,7 @@
     bellSequence: [],
     chapterCard: "",
     chapterTimer: 0,
+    endingCardTimer: 0,
   };
 
   const sounds = {
@@ -529,6 +530,7 @@
     else if (state.scene === "journal") updateJournal();
     else if (state.scene === "battle") updateBattle(dt);
     else if (state.scene === "ending") updateEnding(dt);
+    else if (state.scene === "endingCard") updateEndingCard(dt);
     else if (state.scene === "gameover") updateGameOver();
 
     pressed.clear();
@@ -2238,6 +2240,14 @@
   function updateEnding(dt) {
     updateDialogue(dt);
     if (!state.dialogue) {
+      state.scene = "endingCard";
+      state.endingCardTimer = 0;
+    }
+  }
+
+  function updateEndingCard(dt) {
+    state.endingCardTimer += dt;
+    if (state.endingCardTimer >= 2.6 && just("confirm")) {
       sounds.stopExternal();
       state.scene = "title";
     }
@@ -2286,6 +2296,7 @@
       return;
     }
     state.scene = "ending";
+    state.endingCardTimer = 0;
     state.dialogue = {
       lines: paginateLines(content.endings[route], 450, 17, 3),
       index: 0,
@@ -2293,8 +2304,8 @@
       done: false,
       tick: 0,
       after: () => {
-        sounds.stopExternal();
-        state.scene = "title";
+        state.scene = "endingCard";
+        state.endingCardTimer = 0;
       },
     };
     saveGame();
@@ -2344,6 +2355,7 @@
     if (state.scene === "title") drawTitle();
     else if (state.scene === "battle") drawBattle();
     else if (state.scene === "ending") drawEnding();
+    else if (state.scene === "endingCard") drawEndingCard();
     else if (state.scene === "gameover") drawGameOver();
     else if (state.scene === "journal") {
       drawExplore();
@@ -3556,6 +3568,23 @@
     fillRect(0, 0, W, H, "#050608");
     drawStarfield();
     drawDialogue();
+  }
+
+  function drawEndingCard() {
+    fillRect(0, 0, W, H, "#050608");
+    drawStarfield();
+    const glow = 0.14 + Math.sin(performance.now() * 0.0025) * 0.06;
+    ctx.globalAlpha = glow;
+    fillRect(84, 108, 472, 180, colors.teal);
+    ctx.globalAlpha = 1;
+    panel(96, 120, 448, 156, "rgba(5,6,8,0.94)");
+    text("UNDERlate", W / 2, 178, 42, colors.paper, "center");
+    text("Thanks for playing", W / 2, 220, 18, colors.gold, "center");
+    if (state.endingCardTimer >= 2.6) {
+      ctx.globalAlpha = Math.min(1, (state.endingCardTimer - 2.6) / 0.5);
+      text("Press [Z] to return to main menu", W / 2, 252, 12, colors.dim, "center");
+      ctx.globalAlpha = 1;
+    }
   }
 
   function drawGameOver() {
