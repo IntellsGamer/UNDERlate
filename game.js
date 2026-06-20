@@ -1134,6 +1134,9 @@
         battleText(act.text.concat(extra), "defense");
         return;
       }
+      if (b.enemyId === "overtimeWarden" || b.enemyId === "fracturePrefect") {
+        b.dangerMod = Math.max(b.dangerMod, 1);
+      }
       b.mercy = clamp(b.mercy + act.mercy + mercyBonus(), 0, b.enemy.mercyGoal);
       b.mercyReady = b.mercy >= b.enemy.mercyGoal;
       const extra = b.mercyReady ? [`${b.enemy.name} is ready for MERCY.`] : [`Mercy ${b.mercy}/${b.enemy.mercyGoal}.`];
@@ -1167,6 +1170,9 @@
       const item = content.items[id];
       state.player.hp = Math.min(state.player.maxHp, state.player.hp + (item.heal || 0));
       if (item.calm) b.dangerMod = Math.max(b.dangerMod, item.calm);
+      if (b.enemyId === "overtimeWarden" || b.enemyId === "fracturePrefect") {
+        b.dangerMod = Math.max(b.dangerMod, 1);
+      }
       if (item.mercy && !b.enemy.secretBoss) {
         b.mercy = clamp(b.mercy + item.mercy, 0, b.enemy.mercyGoal);
         b.mercyReady = b.mercy >= b.enemy.mercyGoal;
@@ -1387,7 +1393,13 @@
         sounds.tone(720, 0.035, "triangle", 0.035);
       }
       if (circleHit(soul, bullet) && b.invuln <= 0 && (!bullet.stillOnly || soulMoving)) {
-        const difficultyDamage = b.enemy.secretBoss ? Math.floor(b.difficulty / 2) : b.difficulty;
+        const difficultyDamage = b.enemy.secretBoss
+          ? Math.floor(b.difficulty / 2)
+          : b.enemyId === "overtimeWarden"
+            ? Math.max(1, Math.floor(b.difficulty * 0.55))
+            : b.enemyId === "fracturePrefect"
+              ? Math.max(1, Math.floor(b.difficulty * 0.6))
+            : b.difficulty;
         const damage = Math.max(1, bullet.damage + difficultyDamage - (b.dangerMod || 0));
         b.hitsThisTurn += 1;
         state.player.hp = Math.max(0, state.player.hp - damage);
@@ -1419,6 +1431,10 @@
         const heal = b.hitsThisTurn === 0 ? 4 : 2;
         state.player.hp = Math.min(state.player.maxHp, state.player.hp + heal);
         addFloater(b.soul.x, b.soul.y - 26, `+${heal}`, colors.green);
+      }
+      if ((b.enemyId === "overtimeWarden" || b.enemyId === "fracturePrefect") && b.hitsThisTurn === 0) {
+        state.player.hp = Math.min(state.player.maxHp, state.player.hp + 3);
+        addFloater(b.soul.x, b.soul.y - 26, "+3", colors.green);
       }
       const grade = b.hitsThisTurn === 0
         ? b.grazesThisTurn > 3 ? "You danced dangerously close and stayed untouched." : "You avoided every hit."
@@ -1876,17 +1892,17 @@
         color: colors.gold,
       });
     } else if (activeAttack === "wardenClock") {
-      const angle = b.defenseTimer * 2.6;
+      const angle = b.defenseTimer * 2.1;
       const positions = [
-        { x: box.x + box.w / 2 + Math.cos(angle) * 130, y: box.y - 10, vx: -Math.cos(angle) * 25, vy: 96 },
-        { x: box.x + box.w / 2 - Math.cos(angle) * 130, y: box.y + box.h + 10, vx: Math.cos(angle) * 25, vy: -96 },
+        { x: box.x + box.w / 2 + Math.cos(angle) * 116, y: box.y - 12, vx: -Math.cos(angle) * 18, vy: 88 },
+        { x: box.x + box.w / 2 - Math.cos(angle) * 116, y: box.y + box.h + 12, vx: Math.cos(angle) * 18, vy: -88 },
       ];
       for (const pos of positions) {
         b.bullets.push({
           ...pos,
-          r: 5,
-          life: 3.2,
-          damage: 5,
+          r: 4.5,
+          life: 3,
+          damage: 4,
           color: colors.red,
         });
       }
@@ -1908,16 +1924,18 @@
       }
     } else if (activeAttack === "principalInk") {
       const side = Math.random() > 0.5 ? -1 : 1;
-      for (let i = 0; i < 3; i += 1) {
+      const bursts = b.enemyId === "fracturePrefect" ? 2 : 3;
+      for (let i = 0; i < bursts; i += 1) {
         b.bullets.push({
-          x: side < 0 ? box.x - 12 - i * 16 : box.x + box.w + 12 + i * 16,
+          x: side < 0 ? box.x - 12 - i * 22 : box.x + box.w + 12 + i * 22,
           y: box.y + 24 + Math.random() * (box.h - 48),
-          vx: side < 0 ? 158 + b.difficulty * 5 : -(158 + b.difficulty * 5),
-          vy: (i - 1) * 24,
+          vx: side < 0 ? 146 + b.difficulty * 4 : -(146 + b.difficulty * 4),
+          vy: (i - (bursts - 1) / 2) * 20,
           r: 4,
-          life: 3,
-          damage: 5,
+          life: 2.8,
+          damage: b.enemyId === "fracturePrefect" ? 4 : 5,
           color: colors.green,
+          delay: b.enemyId === "fracturePrefect" ? i * 0.08 : 0,
         });
       }
     } else if (activeAttack === "attendanceBeam") {
@@ -1948,18 +1966,32 @@
       }
     } else if (activeAttack === "overtimeSweep") {
       const top = Math.random() > 0.5;
-      for (let i = 0; i < 4; i += 1) {
+      const safeIndex = Math.floor((b.turn + Math.floor(b.defenseTimer * 2)) % 3);
+      for (let i = 0; i < 3; i += 1) {
+        if (i === safeIndex) continue;
         b.bullets.push({
-          x: box.x + 30 + i * 70,
-          y: top ? box.y - 12 - i * 12 : box.y + box.h + 12 + i * 12,
-          vx: Math.sin(b.defenseTimer * 3) * 30,
-          vy: top ? 135 + b.difficulty * 5 : -(135 + b.difficulty * 5),
+          x: box.x + 54 + i * 82,
+          y: top ? box.y - 12 - i * 8 : box.y + box.h + 12 + i * 8,
+          vx: Math.sin(b.defenseTimer * 2.4 + i) * 18,
+          vy: top ? 122 + b.difficulty * 4 : -(122 + b.difficulty * 4),
           r: 5,
-          life: 3,
-          damage: 5,
+          life: 2.8,
+          damage: 4,
           color: colors.red,
+          delay: i * 0.1,
         });
       }
+      b.bullets.push({
+        x: box.x + 46 + safeIndex * 82,
+        y: top ? box.y - 18 : box.y + box.h + 18,
+        vx: 0,
+        vy: top ? 78 : -78,
+        r: 4,
+        life: 1.2,
+        damage: 0,
+        color: colors.gold,
+        surprise: true,
+      });
     } else if (activeAttack === "detentionStamp") {
       const x = box.x + 30 + Math.floor(Math.random() * 5) * 54;
       const y = box.y + 24 + Math.floor(Math.random() * 3) * 42;
@@ -1978,16 +2010,18 @@
       }
     } else if (activeAttack === "rankLines") {
       const fromLeft = Math.random() > 0.5;
-      for (let i = 0; i < 4; i += 1) {
+      const rows = b.enemyId === "fracturePrefect" ? 3 : 4;
+      for (let i = 0; i < rows; i += 1) {
         b.bullets.push({
-          x: fromLeft ? box.x - 14 - i * 22 : box.x + box.w + 14 + i * 22,
-          y: box.y + 18 + i * 32,
-          vx: fromLeft ? 170 + b.difficulty * 6 : -(170 + b.difficulty * 6),
-          vy: Math.sin(b.defenseTimer * 4 + i) * 34,
+          x: fromLeft ? box.x - 14 - i * 28 : box.x + box.w + 14 + i * 28,
+          y: box.y + 26 + i * 36,
+          vx: fromLeft ? 154 + b.difficulty * 5 : -(154 + b.difficulty * 5),
+          vy: Math.sin(b.defenseTimer * 3.1 + i) * 24,
           r: 4,
-          life: 2.8,
-          damage: 5,
+          life: 2.5,
+          damage: b.enemyId === "fracturePrefect" ? 4 : 5,
           color: colors.red,
+          delay: b.enemyId === "fracturePrefect" ? i * 0.07 : 0,
         });
       }
     } else if (activeAttack === "mirrorSteps") {
