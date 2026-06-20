@@ -222,15 +222,11 @@
 
   window.addEventListener("keydown", (event) => {
     const key = normalizeKey(event.key);
-    const actionKey = ["confirm", "cancel", "save", "load", "pause"].includes(key);
+    const actionKey = ["confirm", "cancel", "load", "pause"].includes(key);
     if (actionKey || !keys.has(key)) pressed.add(key);
     keys.add(key);
     updateKonami(konamiKeyFromEvent(event));
     if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", " ", "Enter"].includes(event.key)) {
-      event.preventDefault();
-    }
-    if (key === "save") {
-      saveGame();
       event.preventDefault();
     }
     if (key === "load") {
@@ -275,7 +271,6 @@
     if (lower === "arrowright" || lower === "d") return "right";
     if (lower === "z" || lower === "enter" || lower === " ") return "confirm";
     if (lower === "x" || lower === "escape" || lower === "backspace") return "cancel";
-    if (lower === "f5") return "save";
     if (lower === "f9") return "load";
     if (lower === "shift") return "pause";
     if (lower === "b") return "b";
@@ -573,7 +568,7 @@
           "In battle, choose FIGHT, ACT, ITEM, or MERCY with the arrow keys.",
           "ACT can make enemies spareable. FIGHT has a timing bar. During enemy turns, dodge with movement.",
           "After battles, choose what happens to the minute you made. Time Debt changes the route.",
-          "F5 saves. F9 loads. Click also confirms menus.",
+          "Save at desks. F9 loads. Click also confirms menus.",
         ], () => {
           state.scene = "title";
         });

@@ -136,6 +136,7 @@ window.UNDERLATE_CONTENT = {
       ],
       props: [
         { id: "shelfPlaque", name: "Shelf Plaque", x: 460, y: 332, w: 42, h: 26, kind: "plaque" },
+        { id: "shelfDesk", name: "Save Desk", x: 96, y: 378, w: 58, h: 26, kind: "desk" },
       ],
       pickups: [
         { id: "pageOne", x: 104, y: 168, item: "memoryPage", flag: "pageOne", text: ["You found Memory Page 1: a handwriting lesson that misses its student."] },
@@ -171,6 +172,7 @@ window.UNDERLATE_CONTENT = {
       ],
       props: [
         { id: "jukebox", name: "Jukebox Without Songs", x: 274, y: 110, w: 44, h: 42, kind: "jukebox" },
+        { id: "cafeDesk", name: "Save Desk", x: 88, y: 128, w: 58, h: 26, kind: "desk" },
       ],
       pickups: [
         { id: "cafeMint", x: 502, y: 378, item: "hushMint", flag: "cafeMint", text: ["You found a Hush Mint under a table.", "It was waiting for a conversation to end."] },
@@ -197,6 +199,7 @@ window.UNDERLATE_CONTENT = {
       props: [
         { id: "platformLever", name: "Brass Lever", x: 506, y: 350, w: 32, h: 34, kind: "lever" },
         { id: "platformSign", name: "Warning Sign", x: 88, y: 82, w: 38, h: 30, kind: "sign" },
+        { id: "platformDesk", name: "Save Desk", x: 456, y: 92, w: 58, h: 26, kind: "desk" },
       ],
       triggers: [
         { id: "puddleChoirScript", x: 220, y: 276, w: 164, h: 84, enemy: "puddleChoir", once: true },
@@ -281,6 +284,7 @@ window.UNDERLATE_CONTENT = {
         { id: "bellCenter", name: "Center Bellstone", x: 304, y: 164, w: 34, h: 34, kind: "bellSwitch", order: 1 },
         { id: "bellRight", name: "Right Bellstone", x: 450, y: 198, w: 34, h: 34, kind: "bellSwitch", order: 2 },
         { id: "bellHint", name: "Bell Hint", x: 286, y: 292, w: 68, h: 26, kind: "plaque" },
+        { id: "bellDesk", name: "Save Desk", x: 88, y: 334, w: 58, h: 26, kind: "desk" },
       ],
       triggers: [
         { id: "bellwightScript", x: 226, y: 324, w: 190, h: 80, enemy: "bellwight", once: true, requireFlag: "bellPuzzleSolved" },
@@ -369,6 +373,7 @@ window.UNDERLATE_CONTENT = {
       props: [
         { id: "blackboard", name: "Blackboard", x: 260, y: 104, w: 120, h: 38, kind: "blackboard" },
         { id: "afterExitSign", name: "Exit Sign", x: 94, y: 204, w: 70, h: 30, kind: "exitSign" },
+        { id: "afterDesk", name: "Save Desk", x: 438, y: 132, w: 58, h: 26, kind: "desk" },
       ],
       pickups: [
         { id: "chalkStarOne", x: 500, y: 286, item: "chalkStar", flag: "chalkStarOne", text: ["You found a Chalk Star.", "It awards itself partial credit."] },
@@ -400,6 +405,7 @@ window.UNDERLATE_CONTENT = {
       props: [
         { id: "detentionFountain", name: "Detention Fountain", x: 304, y: 166, w: 34, h: 42, kind: "fountain" },
         { id: "gardenExitSign", name: "Exit Sign", x: 520, y: 210, w: 54, h: 26, kind: "exitSign" },
+        { id: "gardenDesk", name: "Save Desk", x: 108, y: 210, w: 58, h: 26, kind: "desk" },
       ],
       pickups: [
         { id: "permissionSlip", x: 500, y: 248, item: "permissionSlip", flag: "permissionSlipFound", text: ["You found a Permission Slip.", "It is signed by someone named 'The Consequence.'"] },
@@ -432,6 +438,7 @@ window.UNDERLATE_CONTENT = {
         { id: "mirrorWall", name: "Long Mirror", x: 122, y: 126, w: 72, h: 96, kind: "mirror" },
         { id: "mirrorWallTwo", name: "Long Mirror", x: 446, y: 126, w: 72, h: 96, kind: "mirror" },
         { id: "mirrorExitSign", name: "Exit Sign", x: 64, y: 210, w: 54, h: 26, kind: "exitSign" },
+        { id: "mirrorDesk", name: "Save Desk", x: 470, y: 318, w: 58, h: 26, kind: "desk" },
       ],
       pickups: [
         { id: "mirrorTea", x: 132, y: 294, item: "warmTea", flag: "mirrorTea", text: ["You found Warm Tea reflected into existence."] },
@@ -463,6 +470,7 @@ window.UNDERLATE_CONTENT = {
         { id: "spotlight", name: "Shy Spotlight", x: 110, y: 158, w: 38, h: 58, kind: "spotlight" },
         { id: "stagePoster", name: "Stage Poster", x: 484, y: 158, w: 42, h: 54, kind: "poster" },
         { id: "audExitSign", name: "Exit Sign", x: 294, y: 394, w: 54, h: 26, kind: "exitSign" },
+        { id: "audDesk", name: "Save Desk", x: 464, y: 394, w: 58, h: 26, kind: "desk" },
       ],
       pickups: [
         { id: "auditoriumCandy", x: 320, y: 300, item: "staticCandy", flag: "auditoriumCandy", text: ["You found Static Candy in the front row.", "It claps once when picked up."] },
