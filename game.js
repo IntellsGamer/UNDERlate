@@ -553,7 +553,7 @@
 
   function musicMood() {
     if (state.scene === "title") return "title";
-    if (state.scene === "ending") return "ending";
+    if (state.scene === "ending" || state.scene === "endingCard") return "ending";
     if (state.scene === "battle") return state.battle?.enemy?.boss ? "boss" : "battle";
     if (state.roomId === "dripCafe") return "cafe";
     return "explore";
