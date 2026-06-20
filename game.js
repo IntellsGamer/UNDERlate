@@ -2390,6 +2390,9 @@
   function drawTitle() {
     fillRect(0, 0, W, H, "#06080b");
     drawStarfield();
+    ctx.globalAlpha = 0.18;
+    fillRect(70, 74, 500, 170, colors.ink);
+    ctx.globalAlpha = 1;
     for (let i = 0; i < 9; i += 1) {
       const x = 86 + i * 58;
       const h = 92 + (i % 3) * 28;
@@ -2401,6 +2404,7 @@
     for (let y = 0; y < H; y += 28) {
       fillRect(0, y, W, 1, "rgba(245,240,220,0.04)");
     }
+    strokeRect(74, 78, 492, 158, "rgba(245,240,220,0.12)", 1);
     text("UNDERlate", W / 2 + 3, 124, 50, "rgba(232,95,92,0.42)", "center");
     text("UNDERlate", W / 2, 122, 50, colors.paper, "center");
     text("The Borrowed Hour", W / 2, 164, 17, colors.dim, "center");
@@ -2451,19 +2455,25 @@
   }
 
   function drawFloor(theme, roomTheme) {
+    ctx.globalAlpha = 0.16;
+    fillRect(34, 34, 572, 412, theme.b);
+    ctx.globalAlpha = 1;
     for (let y = 34; y < 446; y += TILE) {
       for (let x = 34; x < 606; x += TILE) {
         const even = ((x + y) / TILE) % 2 === 0;
         fillRect(x, y, TILE, TILE, even ? theme.a : theme.b);
-        if ((x + y) % 96 === 0) fillRect(x + 6, y + 6, 3, 3, "rgba(245,240,220,0.07)");
+        fillRect(x + 1, y + 1, TILE - 2, 1, "rgba(255,255,255,0.018)");
+        fillRect(x + 1, y + TILE - 2, TILE - 2, 1, "rgba(0,0,0,0.1)");
+        if ((x + y) % 96 === 0) fillRect(x + 6, y + 6, 3, 3, "rgba(245,240,220,0.08)");
+        if ((x + y) % 128 === 0) fillRect(x + 20, y + 22, 2, 2, "rgba(0,0,0,0.08)");
       }
     }
     if (roomTheme === "bridge") {
-      for (let i = 0; i < 12; i += 1) strokeRect(78 + i * 42, 70 + i * 23, 160, 26, "rgba(66,195,182,0.12)", 1);
+      for (let i = 0; i < 12; i += 1) strokeRect(78 + i * 42, 70 + i * 23, 160, 26, "rgba(66,195,182,0.14)", 1);
     } else if (roomTheme === "rain") {
       for (let i = 0; i < 36; i += 1) fillRect((i * 47) % W, (i * 83 + performance.now() * 0.035) % H, 2, 12, "rgba(110,168,255,0.16)");
     } else if (roomTheme === "cafe") {
-      fillRect(54, 70, 530, 260, "rgba(255,218,112,0.035)");
+      fillRect(54, 70, 530, 260, "rgba(255,218,112,0.05)");
     } else if (roomTheme === "school") {
       for (let x = 60; x < W - 60; x += 70) fillRect(x, 74, 46, 5, "rgba(255,218,112,0.14)");
     } else if (roomTheme === "garden") {
@@ -2476,6 +2486,8 @@
     }
     fillRect(216, 170, 208, 106, theme.rug);
     strokeRect(216, 170, 208, 106, "rgba(245,240,220,0.18)", 2);
+    fillRect(222, 176, 196, 6, "rgba(255,255,255,0.04)");
+    fillRect(222, 264, 196, 5, "rgba(0,0,0,0.12)");
   }
 
   function drawRoomSetDressing(roomTheme) {
@@ -2594,7 +2606,13 @@
     for (const wall of room.walls || []) {
       fillRect(wall.x, wall.y, wall.w, wall.h, colors.wall);
       fillRect(wall.x, wall.y, wall.w, Math.min(8, wall.h), colors.wallTop);
+      fillRect(wall.x + 2, wall.y + 10, Math.max(0, wall.w - 4), 2, "rgba(255,255,255,0.04)");
       fillRect(wall.x, wall.y + wall.h - 3, wall.w, 3, "rgba(0,0,0,0.24)");
+      if (wall.w > wall.h) {
+        for (let x = wall.x + 14; x < wall.x + wall.w - 8; x += 34) fillRect(x, wall.y + 4, 10, 2, "rgba(0,0,0,0.12)");
+      } else {
+        for (let y = wall.y + 14; y < wall.y + wall.h - 8; y += 34) fillRect(wall.x + 4, y, 2, 10, "rgba(0,0,0,0.12)");
+      }
     }
   }
 
@@ -2661,6 +2679,9 @@
   }
 
   function drawRoomOverlay(room, theme) {
+    ctx.globalAlpha = 0.24;
+    fillRect(34, 34, W - 68, 14, colors.ink);
+    ctx.globalAlpha = 1;
     text(room.name, 48, 62, 14, "rgba(245,240,220,0.72)");
     fillRect(34, 34, W - 68, 5, "rgba(245,240,220,0.05)");
     ctx.globalAlpha = 0.07;
@@ -2668,11 +2689,16 @@
     ctx.beginPath();
     ctx.arc(W / 2, H / 2, 220, 0, Math.PI * 2);
     ctx.fill();
+    ctx.globalAlpha = 0.05;
+    ctx.fillStyle = colors.black;
+    ctx.beginPath();
+    ctx.arc(W / 2, H / 2, 300, 0, Math.PI * 2);
+    ctx.fill();
     ctx.globalAlpha = 1;
   }
 
   function drawHud() {
-    panel(42, 424, 556, 34, "rgba(5,6,8,0.7)");
+    panel(42, 420, 556, 38, "rgba(5,6,8,0.78)");
     text(`LV ${state.player.lv}`, 56, 447, 14, colors.gold);
     text(`HP ${state.player.hp}/${state.player.maxHp}`, 118, 447, 14, colors.paper);
     text(`TOK ${state.player.tokens}`, 250, 447, 14, colors.gold);
@@ -2700,6 +2726,7 @@
     const y = clamp(state.player.y - 30, 48, H - 86);
     fillRect(x, y, 168, 24, "rgba(5,6,8,0.84)");
     strokeRect(x, y, 168, 24, colors.gold, 1);
+    fillRect(x + 4, y + 4, 160, 3, "rgba(255,255,255,0.08)");
     text(state.prompt, x + 84, y + 17, 12, colors.paper, "center");
   }
 
@@ -2988,6 +3015,7 @@
     const d = state.dialogue;
     if (!d) return;
     panel(42, 328, 556, 112, "#050608");
+    fillRect(104, 344, 456, 2, "rgba(255,255,255,0.06)");
     drawDialoguePortrait(58, 342, detectSpeaker(d.lines[d.index] || ""));
     const line = d.lines[d.index] || "";
     wrapText(line.slice(0, d.char), 108, 360, 450, 20, 17, colors.paper, { maxLines: 3 });
@@ -3048,6 +3076,7 @@
     const shop = state.shop;
     if (!shop) return;
     panel(72, 78, 496, 330, "#07090c");
+    fillRect(92, 130, 436, 2, "rgba(255,255,255,0.06)");
     text("DRIP CAFE COUNTER", 320, 116, 22, colors.gold, "center");
     text(`Tokens: ${state.player.tokens}`, 436, 144, 14, colors.paper);
     const options = shop.items.concat(["Leave"]);
@@ -3064,6 +3093,7 @@
 
   function drawJournal() {
     panel(56, 58, 528, 344, "rgba(5,6,8,0.94)");
+    fillRect(78, 112, 484, 2, "rgba(255,255,255,0.06)");
     text("JOURNAL", 320, 96, 24, colors.gold, "center");
     const hints = [];
     hints.push("Rook is trapped inside a borrowed school hour made from late apologies, stolen rest, and unfinished work.");
@@ -3105,6 +3135,9 @@
     ctx.globalAlpha = 0.12;
     fillRect(0, 0, W, H, tint);
     ctx.globalAlpha = 1;
+    ctx.globalAlpha = 0.16;
+    fillRect(92, 42, 456, 170, colors.ink);
+    ctx.globalAlpha = 1;
     for (let i = 0; i < 80; i += 1) {
       const x = (i * 89 + Math.floor(performance.now() * 0.01)) % W;
       const y = (i * 47) % H;
@@ -3115,6 +3148,7 @@
       const y = 74 + ((i * 37 + Math.floor(performance.now() * 0.018)) % 90);
       strokeRect(x, y, 44, 28, "rgba(245,240,220,0.045)", 1);
     }
+    strokeRect(96, 46, 448, 162, "rgba(245,240,220,0.12)", 1);
     fillRect(0, 236, W, 2, "rgba(245,240,220,0.1)");
   }
 
@@ -3124,6 +3158,9 @@
     const y = 70;
     const bob = Math.sin(performance.now() * 0.004) * 3;
     fillRect(cx - 64, y + 112, 128, 12, "rgba(0,0,0,0.38)");
+    ctx.globalAlpha = 0.07;
+    fillRect(cx - 104, y + 4, 208, 128, colors.paper);
+    ctx.globalAlpha = 1;
     if (b.enemy.sprite === "murmurwick") {
       drawCandleEnemy(cx, y + bob);
     } else if (b.enemy.sprite === "quillimp") {
@@ -3155,6 +3192,7 @@
     }
     fillRect(cx - 118, 20, 236, 30, "rgba(5,6,8,0.72)");
     strokeRect(cx - 118, 20, 236, 30, b.enemy.boss ? colors.red : colors.paper, 1);
+    fillRect(cx - 112, 24, 224, 3, "rgba(255,255,255,0.06)");
     text(b.enemy.name, cx, 42, 19, b.enemy.boss ? colors.gold : colors.paper, "center");
     if (b.mercyReady) text("SPAREABLE", cx, 218, 13, colors.green, "center");
   }
@@ -3364,6 +3402,8 @@
   function drawBattleInfo() {
     const b = state.battle;
     const hpRatio = b.hp / b.enemy.maxHp;
+    fillRect(234, 198, 172, 30, "rgba(5,6,8,0.58)");
+    strokeRect(234, 198, 172, 30, "rgba(245,240,220,0.12)", 1);
     fillRect(248, 204, 144, 8, "#452827");
     fillRect(248, 204, 144 * hpRatio, 8, colors.red);
     if (b.enemy.secretBoss) {
@@ -3549,6 +3589,7 @@
       const selected = b.mainIndex === i && b.phase === "menu";
       fillRect(x, 414, 116, 40, selected ? "rgba(255,218,112,0.12)" : "rgba(5,6,8,0.7)");
       strokeRect(x, 414, 116, 40, selected ? colors.gold : colors.paper, 2);
+      fillRect(x + 4, 418, 108, 3, selected ? "rgba(255,218,112,0.18)" : "rgba(255,255,255,0.05)");
       drawCommandIcon(labels[i], x + 18, 426, selected ? colors.gold : colors.paper);
       text(labels[i], x + 66, 440, 18, selected ? colors.gold : colors.paper, "center");
     }
@@ -3654,6 +3695,7 @@
 
   function panel(x, y, w, h, color = "#050608") {
     fillRect(x, y, w, h, color);
+    fillRect(x + 1, y + 1, w - 2, h - 2, "rgba(255,255,255,0.015)");
     fillRect(x + 4, y + 4, w - 8, 4, "rgba(245,240,220,0.08)");
     fillRect(x + 4, y + h - 8, w - 8, 4, "rgba(0,0,0,0.28)");
     strokeRect(x, y, w, h, colors.paper, 3);
